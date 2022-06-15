@@ -166,7 +166,7 @@ public class Sketch extends PApplet {
   public void draw() {
     background(stage);
     if (timer > 0){
-      timer-=2;
+      timer-=10;
       textSize(20);
       text("time: "+timer/100, width-100, 25);
       image(kirbyicon,20,7,20,20);
@@ -384,7 +384,7 @@ public class Sketch extends PApplet {
         deadkirby3Y = kirby3Y;
       }
       if(mouseX >= metaknightX && mouseX <= (metaknightX+100) && mouseY >= metaknightY && mouseY <= (metaknightY+50) && mkcanhit == true){
-        if(metaknightDisplay = true) 
+        if(metaknightDisplay == true) 
           score += 10;
         metaknightDisplay = false;  
         deadmkX = metaknightX;
