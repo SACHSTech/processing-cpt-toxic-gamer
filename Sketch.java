@@ -166,13 +166,13 @@ public class Sketch extends PApplet {
   public void draw() {
     background(stage);
     if (timer > 0){
-      timer--;
+      timer-=2;
       textSize(20);
       text("time: "+timer/100, width-100, 25);
       image(kirbyicon,20,7,20,20);
       text("x "+score, 50, 25);
       
-      if (timer>5900){
+      if (timer>2000){
         image(metaknight_appearing,metaknightX,metaknightY,50,50);
         mkcanhit = false;
         mkturningtick = 0;
@@ -216,7 +216,8 @@ public class Sketch extends PApplet {
     }
     else{
       image(gameover, 320, 240, 640, 200);
-      text("Your Score: "+ score, 320, 480);
+      textSize(40);
+      text("Your Score: "+ score, 480, 480);
     }
   }
   public void kirbywalk(){
@@ -313,11 +314,11 @@ public class Sketch extends PApplet {
   }
   public void metaknight(){
     if(metaknightDisplay == true){
-      if (mkturningtick < 45){
+      if (mkturningtick < 45 && timer <= 2000){
         image(metaknight_turning,metaknightX,metaknightY,50,50);
         mkturningtick++;
       }
-      else{
+      if(mkturningtick >=45){
         if(mkcanhit == false){
           if(metaknightY > metaknightstartY-100){
             image(metaknight_jump,metaknightX,metaknightY,80,60);
@@ -331,7 +332,7 @@ public class Sketch extends PApplet {
         if(metaknightX <=width && metaknightY >= -50 && jumptick >=5){
           image(metaknight_glide,metaknightX,metaknightY,100,50);
           mkcanhit = true;
-          metaknightX +=10;
+          metaknightX +=8;
           metaknightstartX += 1;
           metaknightY = -pow(2,metaknightstartX/20)+121;
         }
@@ -357,36 +358,37 @@ public class Sketch extends PApplet {
   }
   public void mouseClicked() {
     hitmarkDisplay = true;
-    if (mouseX >= kirbyX && mouseX <= (kirbyX+40) && mouseY >= kirbyY && mouseY <= (kirbyY+40)){
-      if(kirbyDisplay == true){
-        score ++;
+      if (mouseX >= kirbyX && mouseX <= (kirbyX+40) && mouseY >= kirbyY && mouseY <= (kirbyY+40)){
+        if(kirbyDisplay == true){
+          score ++;
+        }
+        kirbyDisplay = false;
+        deadkirbyX = kirbyX;
+        deadkirbyY = kirbyY;
+        
       }
-      kirbyDisplay = false;
-      deadkirbyX = kirbyX;
-      deadkirbyY = kirbyY;
-      
-    }  
-    if (mouseX >= kirby2X && mouseX <= (kirby2X+40) && mouseY >= kirby2Y && mouseY <= (kirby2Y+40)){
-      if(kirby2Display == true){
-        score++;
+      if (mouseX >= kirby2X && mouseX <= (kirby2X+40) && mouseY >= kirby2Y && mouseY <= (kirby2Y+40)){
+        if(kirby2Display == true){
+          score++;
+        }
+        kirby2Display = false;
+        deadkirby2X = kirby2X;
+        deadkirby2Y = kirby2Y;
       }
-      kirby2Display = false;
-      deadkirby2X = kirby2X;
-      deadkirby2Y = kirby2Y;
-    }
-    if (mouseX >= kirby3X && mouseX <= (kirby3X+40) && mouseY >= kirby3Y && mouseY <= (kirby3Y+40)){
-      if(kirby3Display == true){
-        score++;
+      if (mouseX >= kirby3X && mouseX <= (kirby3X+40) && mouseY >= kirby3Y && mouseY <= (kirby3Y+40)){
+        if(kirby3Display == true){
+          score++;
+        }
+        kirby3Display = false;  
+        deadkirby3X = kirby3X;
+        deadkirby3Y = kirby3Y;
       }
-      kirby3Display = false;  
-      deadkirby3X = kirby3X;
-      deadkirby3Y = kirby3Y;
-    }
-    if(mouseX >= metaknightX && mouseX <= (metaknightX+100) && mouseY >= metaknightY && mouseY <= (metaknightY+50) && mkcanhit == true){
-      score += 10;
-      metaknightDisplay = false;  
-      deadmkX = metaknightX;
-      deadmkY = metaknightY;
-    }
-  }
+      if(mouseX >= metaknightX && mouseX <= (metaknightX+100) && mouseY >= metaknightY && mouseY <= (metaknightY+50) && mkcanhit == true){
+        if(metaknightDisplay = true) 
+          score += 10;
+        metaknightDisplay = false;  
+        deadmkX = metaknightX;
+        deadmkY = metaknightY;
+      }
+  } 
 }
