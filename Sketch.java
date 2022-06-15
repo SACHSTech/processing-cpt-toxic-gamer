@@ -166,7 +166,7 @@ public class Sketch extends PApplet {
   public void draw() {
     background(stage);
     if (timer > 0){
-      timer-=10;
+      timer-=2;
       textSize(20);
       text("time: "+timer/100, width-100, 25);
       image(kirbyicon,20,7,20,20);
