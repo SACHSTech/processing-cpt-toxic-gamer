@@ -57,6 +57,7 @@ public class Sketch extends PApplet {
   PImage kirby3_falling;
   float deadkirby3X;
   float deadkirby3Y; 
+  float kirby3Xchange=random(-5,5);
   int kirby3_dying_width = 22;
   int kirby3_dying_height = 26;
   boolean kirby3Display = true;
@@ -130,7 +131,8 @@ public class Sketch extends PApplet {
     metaknight_appearing = metaknight_spritesheet.get(108,1749,27,24);
     metaknight_turning = metaknight_spritesheet.get(308,1748,30,27);
     metaknight_jump = metaknight_spritesheet.get(338,300,55,42);
-    dead_metaknight = metaknight_spritesheet.get(282,1675,49,41);
+    metaknight_glide = metaknight_spritesheet.get(406,371,72,33);
+    dead_metaknight = metaknight_spritesheet.get(543,1668,38,48);
 
     //boo
     boo = loadImage("neutral_boo.png");
@@ -157,6 +159,8 @@ public class Sketch extends PApplet {
     kirby2Display = true;
     kirby3Display = true;
     metaknightDisplay = true;
+    mkhit=false;
+    mkcanhit=false;
     booDisplay = true;
   }
   public void draw() {
@@ -167,13 +171,13 @@ public class Sketch extends PApplet {
       text("time: "+timer/100, width-100, 25);
       image(kirbyicon,20,7,20,20);
       text("x "+score, 50, 25);
-      if (hitmarkDisplay == true && hitmarkTime < 7){
-        image(hitmark, mouseX - 25, mouseY - 25, 50, 50);
-        hitmarkTime++;
-      }
-      else{
-        hitmarkDisplay = false;
-        hitmarkTime = 0;
+      
+      if (timer>5900){
+        image(metaknight_appearing,metaknightX,metaknightY,50,50);
+        mkcanhit = false;
+        mkturningtick = 0;
+        jumptick = 0;
+        tickcount4 = 0;
       }
       if(timer%100 == 0){
         if(select < 0 || select > 50)
@@ -183,7 +187,7 @@ public class Sketch extends PApplet {
         if(select3 < 0 || select3 > 50)
           select3 = random(100);
       }
-      if(timer == 5800)
+      if(timer == 5900)
         mkappear = true;
       if(select >= 0 && select <=50){
         kirbywalk();
@@ -194,12 +198,21 @@ public class Sketch extends PApplet {
       if(select3 >= 0 && select3 <=50){
         kirbyverticalfly();
       }
-      if (mkappear==true){
+      if (mkappear == true){
+        mkhit =false;
         metaknight();
       }  
       crosshairX = mouseX - 25;
       crosshairY = mouseY - 25;
       image(crosshair, crosshairX, crosshairY, 50, 50);
+      if (hitmarkDisplay == true && hitmarkTime < 7){
+        image(hitmark, mouseX - 25, mouseY - 25, 50, 50);
+        hitmarkTime++;
+      }
+      else{
+        hitmarkDisplay = false;
+        hitmarkTime = 0;
+      }
     }
     else{
       image(gameover, 320, 240, 640, 200);
@@ -242,6 +255,7 @@ public class Sketch extends PApplet {
         select2 = -1;
         kirby2X = -40;
         kirby2Y = random(500,650);
+        
       }
     }
     if (kirby2Display == false){  
@@ -269,11 +283,13 @@ public class Sketch extends PApplet {
       tickcount3 = 0;
       if (kirby3Y <= height && kirby3Y >= -40){  
         kirby3Y -=3;
+        kirby3X+=kirby3Xchange;
       }
       else{
         select3 = -1;
           kirby3X = random(80,600);
           kirby3Y = height;
+          kirby3Xchange=random(-5,5);
       }
     }
     if (kirby3Display == false){  
@@ -290,50 +306,45 @@ public class Sketch extends PApplet {
           select3 = -1;
           kirby3X = random(80,600);
           kirby3Y = height;
+          kirby3Xchange=random(-5,5);
           kirby3Display = true;
         }
     }
   }
   public void metaknight(){
-    if(metaknightDisplay = true){
-      if (mkhit = false){
-        image(metaknight_appearing,metaknightX,metaknightY,50,50);
-        mkcanhit = false;
-        mkturningtick = 0;
-        jumptick = 0;
-        tickcount4 = 0;
-      }
-      else if (mkturningtick < 20){
+    if(metaknightDisplay == true){
+      if (mkturningtick < 45){
         image(metaknight_turning,metaknightX,metaknightY,50,50);
         mkturningtick++;
       }
       else{
-        if(metaknightY > metaknightstartY-100){
-          image(metaknight_jump,metaknightX,metaknightY,50,50);
-          if(mkcanhit == false){
-            metaknightX++;
+        if(mkcanhit == false){
+          if(metaknightY > metaknightstartY-100){
+            image(metaknight_jump,metaknightX,metaknightY,80,60);
             metaknightY-=4;
+            metaknightstartX = 0;
           }
-          metaknightstartX = 0;
+          else if (jumptick < 5){
+            jumptick++;
+          }
         }
-        else if (jumptick < 5){
-          jumptick++;
-        }
-        else if(metaknightX <=width && metaknightY >= -50){
-          image(metaknight_jump,metaknightX,metaknightY,50,50);
+        if(metaknightX <=width && metaknightY >= -50 && jumptick >=5){
+          image(metaknight_glide,metaknightX,metaknightY,100,50);
           mkcanhit = true;
-          metaknightX += 10;
+          metaknightX +=10;
           metaknightstartX += 1;
-          metaknightY = -pow(2,metaknightstartX/10)+121;
+          metaknightY = -pow(2,metaknightstartX/20)+121;
         }
       }
     }
-    else if(tickcount4<60){
-      image(dead_metaknight,deadmkX,deadmkY);
-      tickcount4++;
-    }
     else{
-      mkappear = false;
+      if(tickcount4 < 60){
+        image(dead_metaknight,deadmkX,deadmkY,60,80);
+        tickcount4++;
+      }
+      else{
+        mkappear=false;
+      }
     }
   }
   public void boo(){
@@ -371,13 +382,8 @@ public class Sketch extends PApplet {
       deadkirby3X = kirby3X;
       deadkirby3Y = kirby3Y;
     }
-    if (mouseX >= metaknightX && mouseX <= (metaknightX+40) && mouseY >= metaknightY && mouseY <= (metaknightY+40) && mkhit == false){
-      mkhit = true;
-    }
-    else if(mouseX >= metaknightX && mouseX <= (metaknightX+40) && mouseY >= metaknightY && mouseY <= (metaknightY+40) && mkhit == true){
-      if(mkcanhit == true){
-        score += 10;
-      }
+    if(mouseX >= metaknightX && mouseX <= (metaknightX+100) && mouseY >= metaknightY && mouseY <= (metaknightY+50) && mkcanhit == true){
+      score += 10;
       metaknightDisplay = false;  
       deadmkX = metaknightX;
       deadmkY = metaknightY;
