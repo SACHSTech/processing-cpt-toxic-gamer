@@ -6,9 +6,7 @@ public class Sketch extends PApplet {
   PImage stage;
   PImage gameover;
   int timer = 6000;
-  float select = -1;
-  float select2 = -1;
-  float select3 = -1;
+  float select[];
   int numberofkirby;
   int score = 0;
   PImage kirbyicon;
@@ -89,8 +87,11 @@ public class Sketch extends PApplet {
   PImage shyboo;
   float booX;
   float booY;
+  float booXchange;
+  float shybooX;
+  float shybooY;
   boolean booDisplay = true;
-  int tickcount5;
+  int tickcount5 = 0;
   //crosshair
   PImage crosshair;
   PImage hitmark;
@@ -98,6 +99,8 @@ public class Sketch extends PApplet {
   int hitmarkTime; 
   int crosshairX;
   int crosshairY;
+  int initialslct;
+  
   
   public void settings() {
     size(1280, 720);
@@ -108,7 +111,10 @@ public class Sketch extends PApplet {
     stage = loadImage("stage.png");
     background(stage);
     gameover = loadImage("gameover.png");
-    
+    select = new float[4];
+    for (initialslct = 1; initialslct <= 3; initialslct++)
+      select[initialslct] = -1;
+
     //kirby
     kirby_spritesheet = loadImage("kirby_spritesheet.png");
     kirby_walking_sheet = kirby_spritesheet.get(9, 55, kirby_walking_width*int_kirby_walking_frames, kirby_walking_height);
@@ -180,22 +186,20 @@ public class Sketch extends PApplet {
         tickcount4 = 0;
       }
       if(timer%100 == 0){
-        if(select < 0 || select > 50)
-          select = random(100);  
-        if(select2 < 0 || select2 > 50)
-          select2 = random(100);
-        if(select3 < 0 || select3 > 50)
-          select3 = random(100);
+        for(int countkirby = 1; countkirby <= 3; countkirby++){
+          if(select[countkirby] < 0 || select[countkirby] > 50)
+            select[countkirby] = (int)(random(100)+0.5);  
+        }
       }
-      if(timer == 5900)
+      if(timer == 2000)
         mkappear = true;
-      if(select >= 0 && select <=50){
+      if(select[1] >= 0 && select[1] <=50){
         kirbywalk();
       }
-      if(select2 >= 0 && select2 <=50){
+      if(select[2] >= 0 && select[2] <=50){
         kirbyfly();
       }
-      if(select3 >= 0 && select3 <=50){
+      if(select[3] >= 0 && select[3] <=50){
         kirbyverticalfly();
       }
       if (mkappear == true){
@@ -213,22 +217,25 @@ public class Sketch extends PApplet {
         hitmarkDisplay = false;
         hitmarkTime = 0;
       }
-    }
-    else{
-      image(gameover, 320, 240, 640, 200);
-      textSize(40);
-      text("Your Score: "+ score, 480, 480);
-    }
+      }
+      else{
+        image(gameover, 320, 240, 640, 200);
+        textSize(40);
+        text("Your Score: "+ score, 480, 480);
+      }
   }
   public void kirbywalk(){
     if (kirbyDisplay == true){
       image(kirby_walking_frames[(frameCount/3)%int_kirby_walking_frames], kirbyX, kirbyY,40,40);
       tickcount = 0;
       if (kirbyX <= width && kirbyX >=-40){  
-        kirbyX += 2.5;
+        if(timer >= 2000)
+          kirbyX += 2.5;
+        else
+          kirbyX += 5;
       }
       else{
-        select = -1;
+        select[1] = -1;
         kirbyX = -40;
         kirbyY = random(500,650);
       }
@@ -238,7 +245,7 @@ public class Sketch extends PApplet {
       tickcount++;
     }
     if (tickcount >=60){
-      select = -1;
+      select[1] = -1;
       kirbyX = -40;
       kirbyY = random(500,650);
       kirbyDisplay = true;
@@ -249,11 +256,14 @@ public class Sketch extends PApplet {
       image(kirby_flying_frames[(frameCount/3)%int_kirby_flying_frames], kirby2X, kirby2Y,40,40);
       tickcount2 = 0;
       if (kirby2X <= width && kirby2X >= -40){  
-        kirby2X += 2;
+        if(timer >= 2000)
+          kirby2X += 2;
+        else
+          kirby2X += 4;
         kirby2Y = (8*sin(kirby2X/10) + kirby2startingY);
       }
       else{
-        select2 = -1;
+        select[2] = -1;
         kirby2X = -40;
         kirby2Y = random(500,650);
         
@@ -270,7 +280,7 @@ public class Sketch extends PApplet {
           deadkirby2Y += 5;
         }
         else{
-          select2 = -1;
+          select[2] = -1;
           kirby2Display = true;
           kirby2X = -40;
           kirby2Y = random(100,500);
@@ -283,14 +293,17 @@ public class Sketch extends PApplet {
       image(kirby_vertflying_frames[(frameCount/3)%int_kirby_vertflying_frames], kirby3X, kirby3Y,40,40);
       tickcount3 = 0;
       if (kirby3Y <= height && kirby3Y >= -40){  
-        kirby3Y -=3;
+        if(timer >= 2000)
+          kirby3Y -=3;
+        else
+          kirby3Y -=6;
         kirby3X+=kirby3Xchange;
       }
       else{
-        select3 = -1;
+        select[3] = -1;
           kirby3X = random(80,600);
           kirby3Y = height;
-          kirby3Xchange=random(-5,5);
+          kirby3Xchange=random(-3,3);
       }
     }
     if (kirby3Display == false){  
@@ -304,7 +317,7 @@ public class Sketch extends PApplet {
           deadkirby3Y += 5;
         }
         else{
-          select3 = -1;
+          select[3] = -1;
           kirby3X = random(80,600);
           kirby3Y = height;
           kirby3Xchange=random(-5,5);
@@ -332,7 +345,7 @@ public class Sketch extends PApplet {
         if(metaknightX <=width && metaknightY >= -50 && jumptick >=5){
           image(metaknight_glide,metaknightX,metaknightY,100,50);
           mkcanhit = true;
-          metaknightX +=8;
+          metaknightX +=10;
           metaknightstartX += 1;
           metaknightY = -pow(2,metaknightstartX/20)+121;
         }
@@ -349,11 +362,11 @@ public class Sketch extends PApplet {
     }
   }
   public void boo(){
-    if(booDisplay = true){
+    if(booDisplay == true){
       tickcount5 = 0;
-      booX = 200;
-      booY = -pow(booX,2)+200;
-
+      booX += 5;
+      booXchange++;
+      booY = -pow(booXchange,2)+200;
     }
   }
   public void mouseClicked() {
@@ -389,6 +402,11 @@ public class Sketch extends PApplet {
         metaknightDisplay = false;  
         deadmkX = metaknightX;
         deadmkY = metaknightY;
+      } 
+      if(mouseX >= booX && mouseX <= (booX+30) && mouseY >= booY && mouseY <= (booY+30)){
+        if (booDisplay == true)
+        score +=5;
+
       }
   } 
 }
