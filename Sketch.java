@@ -6,7 +6,7 @@ public class Sketch extends PApplet {
   PImage stage;
   PImage gameover;
   int timer = 6000;
-  float select[];
+  int select[];
   int numberofkirby;
   int score = 0;
   PImage kirbyicon;
@@ -111,7 +111,7 @@ public class Sketch extends PApplet {
     stage = loadImage("stage.png");
     background(stage);
     gameover = loadImage("gameover.png");
-    select = new float[4];
+    select = new int[4];
     for (initialslct = 1; initialslct <= 3; initialslct++)
       select[initialslct] = -1;
 
@@ -171,6 +171,7 @@ public class Sketch extends PApplet {
   }
   public void draw() {
     background(stage);
+    //operates when the timer is still counting down, ie. hasn't reach 0
     if (timer > 0){
       timer-=2;
       textSize(20);
@@ -185,14 +186,17 @@ public class Sketch extends PApplet {
         jumptick = 0;
         tickcount4 = 0;
       }
+      //randomize the values of the integers that are assigned to a specific movement method
       if(timer%100 == 0){
         for(int countkirby = 1; countkirby <= 3; countkirby++){
           if(select[countkirby] < 0 || select[countkirby] > 50)
             select[countkirby] = (int)(random(100)+0.5);  
         }
       }
+      //determines the timing when metaknight appears
       if(timer == 2000)
         mkappear = true;
+      //executes the methods if the radomized integer assigned to that method is inside the range
       if(select[1] >= 0 && select[1] <=50){
         kirbywalk();
       }
@@ -206,6 +210,7 @@ public class Sketch extends PApplet {
         mkhit =false;
         metaknight();
       }  
+      //draw the crosshair and the hitmark
       crosshairX = mouseX - 25;
       crosshairY = mouseY - 25;
       image(crosshair, crosshairX, crosshairY, 50, 50);
@@ -218,12 +223,14 @@ public class Sketch extends PApplet {
         hitmarkTime = 0;
       }
       }
+      //ending screen, appears when the time runs out
       else{
         image(gameover, 320, 240, 640, 200);
         textSize(40);
         text("Your Score: "+ score, 480, 480);
       }
   }
+  //a movement method of kirby walking on the ground
   public void kirbywalk(){
     if (kirbyDisplay == true){
       image(kirby_walking_frames[(frameCount/3)%int_kirby_walking_frames], kirbyX, kirbyY,40,40);
@@ -251,6 +258,7 @@ public class Sketch extends PApplet {
       kirbyDisplay = true;
     }
   }
+  ////a movement method of kirby flying horizontally while moving up and down in period
   public void kirbyfly(){
     if (kirby2Display == true){
       image(kirby_flying_frames[(frameCount/3)%int_kirby_flying_frames], kirby2X, kirby2Y,40,40);
@@ -288,6 +296,7 @@ public class Sketch extends PApplet {
         }
     }
   } 
+  //a movement method of kirby flying vertically/diagonally
   public void kirbyverticalfly(){
     if (kirby3Display == true){
       image(kirby_vertflying_frames[(frameCount/3)%int_kirby_vertflying_frames], kirby3X, kirby3Y,40,40);
@@ -325,6 +334,7 @@ public class Sketch extends PApplet {
         }
     }
   }
+  //when executed, the metaknight in the background moves and glides away
   public void metaknight(){
     if(metaknightDisplay == true){
       if (mkturningtick < 45 && timer <= 2000){
@@ -361,14 +371,7 @@ public class Sketch extends PApplet {
       }
     }
   }
-  public void boo(){
-    if(booDisplay == true){
-      tickcount5 = 0;
-      booX += 5;
-      booXchange++;
-      booY = -pow(booXchange,2)+200;
-    }
-  }
+  //execute when mouse is clicked, indicates if a target is hit and operates the scoring system
   public void mouseClicked() {
     hitmarkDisplay = true;
       if (mouseX >= kirbyX && mouseX <= (kirbyX+40) && mouseY >= kirbyY && mouseY <= (kirbyY+40)){
